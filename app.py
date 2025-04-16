@@ -1,14 +1,14 @@
 import streamlit as st
-import joblib
 import pandas as pd
-
+import joblib
 from utils import preprocessor
 
 # Load the model
 model = joblib.load("model.joblib")
 
-# UI
+# Streamlit UI
 st.title("Sentiment Analyzer")
+
 text_input = st.text_area("Enter a sentence:")
 
 if st.button("Analyze"):
