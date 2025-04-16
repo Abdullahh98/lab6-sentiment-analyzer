@@ -1,25 +1,27 @@
 import streamlit as st
-import pandas as pd
 import joblib
+import pandas as pd
+import spacy.cli
+
+# ✅ Download model if not already available (important for Streamlit Cloud)
+spacy.cli.download("en_core_web_sm")
+
 from utils import preprocessor
 
-def run():
-    model = joblib.load(open('model.joblib', 'rb'))
+# Load the model
+model = joblib.load("model.joblib")
 
-    st.title("Sentiment Analysis")
-    st.text("Basic app to detect the sentiment of text.")
-    st.text("")
-    userinput = st.text_input('Enter text below, then click the Predict button.', placeholder='Input text HERE')
-    st.text("")
-    predicted_sentiment = ""
-    if st.button("Predict"):
-        predicted_sentiment = model.predict(pd.Series(userinput))[0]
-        if predicted_sentiment == 1:
-            output = 'positive 👍'
-        else:
-            output = 'negative 👎'
-        sentiment=f'Predicted sentiment of "{userinput}" is {output}.'
-        st.success(sentiment)
+# UI
+st.title("Sentiment Analyzer")
+text_input = st.text_area("Enter a sentence:")
 
-if __name__ == "__main__":
-    run()
+if st.button("Analyze"):
+    if text_input.strip() == "":
+        st.warning("Please enter a sentence.")
+    else:
+        # Convert text to DataFrame for compatibility
+        df = pd.Series([text_input])
+        clean_df = preprocessor().fit_transform(df)
+        prediction = model.predict(clean_df)
+        sentiment = "Positive 😀" if prediction[0] == 1 else "Negative 😟"
+        st.success(f"Sentiment: {sentiment}")
