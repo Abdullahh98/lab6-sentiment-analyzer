@@ -7,7 +7,7 @@ import en_core_web_sm
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.svm import LinearSVC
 
-nlp = en_core_web_sm.load()
+nlp = spacy.load('en_core_web_sm')
 classifier = LinearSVC()
 
 def clean_text(text):
