@@ -4,7 +4,7 @@ import joblib
 from utils import preprocessor
 
 def run():
-    model = joblib.load('model.joblib', 'r')
+    model = joblib.load(open('model.joblib', 'rb'))
 
     st.title("Sentiment Analysis")
     st.text("Basic app to detect the sentiment of text.")
