@@ -1,17 +1,12 @@
-import os
-os.environ["THINC_BACKEND"] = "cpu"  # 🚫 Disable GPU usage
-
 import numpy as np
 import pandas as pd
 import regex as re
-import joblib
-import spacy  # ✅ Use spacy directly (instead of en_core_web_sm)
+import spacy  # ✅ Use spacy directly
 
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.svm import LinearSVC
 
-# ✅ Load the small English model with minimal pipeline to avoid issues
-nlp = spacy.load("en_core_web_sm", exclude=["parser", "ner"])
+nlp = spacy.load("en_core_web_sm")  # ✅ Standard model load
 classifier = LinearSVC()
 
 def clean_text(text):
@@ -19,22 +14,23 @@ def clean_text(text):
     text = re.sub(r'(\s\s+|\n\n+)', r'\1', text)
     # remove double quotes
     text = re.sub(r'"', '', text)
-
     return text
 
 def convert_text(text):
     sent = nlp(text)
+    ents = {x.text: x for x in sent.ents}
     tokens = []
     for w in sent:
         if w.is_stop or w.is_punct:
             continue
-        tokens.append(w.lemma_.lower())
+        if w.text in ents:
+            tokens.append(w.text)
+        else:
+            tokens.append(w.lemma_.lower())
     text = ' '.join(tokens)
-
     return text
 
 class preprocessor(TransformerMixin, BaseEstimator):
-
     def __init__(self):
         pass
 
